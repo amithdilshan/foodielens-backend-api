@@ -1,2 +1,17 @@
-# foodielens-backend-api
-A simple Node.js Express API for FoodieLens app that processes food image uploads and returns AI-powered food recognition results using Replicate API. Built to handle image classification, calorie estimation, and confidence scoring for scanned food items.
+# 🍔 FoodieLens Backend API
+
+This is a simple Node.js Express API for the FoodieLens mobile app.
+
+## Features
+- Accepts food image uploads
+- Uses Replicate AI API to recognize food
+- Returns food name, calories, and confidence score
+
+## Example Response
+```json
+{
+  "food": "Pizza",
+  "calories": 285,
+  "confidence": 0.95,
+  "image": "https://cdn.example.com/pizza.jpg"
+}
