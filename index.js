@@ -9,6 +9,8 @@ const upload = multer();
 
 app.post('/scan', upload.single('file'), async (req, res) => {
   try {
+    console.log('Using Replicate Token:', process.env.REPLICATE_API_TOKEN);
+
     const replicateResponse = await axios.post('https://api.replicate.com/v1/predictions', {
       version: 'your_model_version',
       input: { image: req.file.buffer.toString('base64') },
@@ -27,7 +29,7 @@ app.post('/scan', upload.single('file'), async (req, res) => {
       image: prediction?.output?.image_url || 'https://via.placeholder.com/150',
     });
   } catch (error) {
-    console.error(error);
+    console.error(error.response?.data || error);
     res.status(500).json({ error: 'Failed to scan' });
   }
 });
