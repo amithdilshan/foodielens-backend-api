@@ -10,8 +10,8 @@ This is a simple Node.js Express API for the FoodieLens mobile app.
 ## Example Response
 ```json
 {
-  "food": "Pizza",
+  "food": "Burger",
   "calories": 285,
   "confidence": 0.95,
-  "image": "https://cdn.example.com/pizza.jpg"
+  "image": "https://cdn.example.com/Burger.jpg"
 }
