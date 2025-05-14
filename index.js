@@ -9,28 +9,27 @@ const upload = multer();
 
 app.post('/scan', upload.single('file'), async (req, res) => {
   try {
-    console.log('Using Replicate Token:', process.env.REPLICATE_API_TOKEN);
+    console.log('Using HuggingFace Token:', process.env.HF_API_TOKEN);
 
-    const replicateResponse = await axios.post('https://api.replicate.com/v1/predictions', {
-      version: 'your_model_version',
-      input: { image: req.file.buffer.toString('base64') },
-    }, {
-      headers: {
-        'Authorization': `Token ${process.env.REPLICATE_API_TOKEN}`,
-      }
-    });
+    const base64Image = req.file.buffer.toString('base64');
+    const imageData = `data:image/jpeg;base64,${base64Image}`;
 
-    const prediction = replicateResponse.data;
+    const response = await axios.post(
+      'https://api-inference.huggingface.co/models/thuyentruong/food_classification_model',
+      { inputs: imageData },
+      { headers: { Authorization: `Bearer ${process.env.HF_API_TOKEN}` } }
+    );
+
+    const prediction = response.data[0];
 
     res.json({
-      food: prediction?.output?.label || 'Burger',
-      calories: 250,
-      confidence: prediction?.output?.confidence || 0.90,
-      image: prediction?.output?.image_url || 'https://via.placeholder.com/150',
+      food: prediction.label,
+      confidence: prediction.score,
+      image: imageData,
     });
   } catch (error) {
     console.error(error.response?.data || error);
-    res.status(500).json({ error: 'Failed to scan' });
+    res.status(500).json({ error: 'Failed to classify food' });
   }
 });
 
