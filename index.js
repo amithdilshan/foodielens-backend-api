@@ -1,4 +1,6 @@
 
+require('dotenv').config();
+
 const express = require('express');
 const multer = require('multer');
 const axios = require('axios');
@@ -12,7 +14,7 @@ app.post('/scan', upload.single('file'), async (req, res) => {
       input: { image: req.file.buffer.toString('base64') },
     }, {
       headers: {
-        'Authorization': 'Token your_replicate_api_token',
+        'Authorization': `Token ${process.env.REPLICATE_API_TOKEN}`,
       }
     });
 
