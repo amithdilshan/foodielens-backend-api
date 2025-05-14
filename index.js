@@ -1,72 +1,51 @@
-
 const express = require('express');
-const multer = require('multer');
+const bodyParser = require('body-parser');
 const axios = require('axios');
-const FormData = require('form-data');
-require('dotenv').config();
-
 const app = express();
 const port = process.env.PORT || 3000;
 
-const upload = multer({ storage: multer.memoryStorage() });
+app.use(bodyParser.json());
 
-app.post('/upload', upload.single('image'), async (req, res) => {
+// Health check route
+app.get('/', (req, res) => {
+  res.send('FoodieLens Backend API is running successfully!');
+});
+
+// Prediction endpoint
+app.post('/predict', async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No image uploaded' });
-    }
+    const image = req.body.image;
 
-    const formData = new FormData();
-    formData.append('file', req.file.buffer, {
-      filename: req.file.originalname,
-      contentType: req.file.mimetype,
-    });
+    if (!image) {
+      return res.status(400).json({ error: 'No image provided' });
+    }
 
     const response = await axios.post(
       'https://api-inference.huggingface.co/models/thuyentruong/food_classification_model',
-      formData,
+      { inputs: image },
       {
         headers: {
-          Authorization: `Bearer ${process.env.HF_TOKEN}`,
-          ...formData.getHeaders(),
-        },
+          Authorization: 'Bearer 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'
+        }
       }
     );
 
-    const result = response.data;
+    res.json(response.data);
 
-    if (Array.isArray(result) && result.length > 0 && result[0].label) {
-      res.json({
-        food: result[0].label,
-        confidence: result[0].score,
-        calories: calculateCalories(result[0].label),
+  } catch (error) {
+    console.error('Prediction Error:', error.message);
+
+    if (error.response) {
+      res.status(error.response.status).json({
+        error: error.response.data.error || 'Prediction failed',
+        detail: error.response.data
       });
     } else {
-      res.status(404).json({ error: 'No food detected' });
+      res.status(500).json({ error: 'Prediction failed', detail: error.message });
     }
-  } catch (error) {
-    console.error(error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Failed to classify image' });
   }
 });
 
-function calculateCalories(food) {
-  const foodCalories = {
-    Pizza: 285,
-    Burger: 295,
-    Salad: 150,
-    Sushi: 200,
-    Rice: 250,
-    Sandwich: 300,
-  };
-
-  return foodCalories[food] || 0;
-}
-
-app.get('/', (req, res) => {
-  res.send('FoodieLens API is running');
-});
-
 app.listen(port, () => {
-  console.log(`FoodieLens API running on port ${port}`);
+  console.log(`FoodieLens Backend API running on port ${port}`);
 });
