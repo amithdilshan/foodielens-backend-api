@@ -1,48 +1,40 @@
+
+// Fixed index.js (Working with correct model and token)
 const express = require('express');
-const multer = require('multer');
 const axios = require('axios');
-const cors = require('cors');
-const fs = require('fs');
-
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-const upload = multer({ storage: multer.memoryStorage() });
+require('dotenv').config();
+app.use(express.json());
 
-app.post('/upload', upload.single('image'), async (req, res) => {
-  try {
-    const image = req.file.buffer.toString('base64');
+app.get('/', (req, res) => {
+    res.send('FoodieLens API is Live');
+});
 
-    const response = await axios.post(
-      'https://huggingface.co/thuyentruong/food_classification_model',
-      { inputs: `data:image/jpeg;base64,${image}` },
-      {
-        headers: {
-          Authorization: `Bearer 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`,
-        },
-      }
-    );
+app.post('/classify', async (req, res) => {
+    const imageUrl = req.body.image_url;
+    if (!imageUrl) return res.status(400).json({ error: 'Missing image_url' });
 
-    const result = response.data;
-    console.log(result);
+    try {
+        const response = await axios.post(
+            'https://api-inference.huggingface.co/models/thuyentruong/food_classification_model',
+            { inputs: imageUrl },
+            { headers: { Authorization: `Bearer ${process.env.HF_API_TOKEN}` } }
+        );
 
-    if (result && Array.isArray(result) && result.length > 0) {
-      const topResult = result[0];
-      res.json({
-        food: topResult.label || 'Unknown Food',
-        confidence: topResult.score || 0,
-        calories: 0, // You can add a calories API here if needed
-      });
-    } else {
-      res.status(500).json({ error: 'Invalid response from model' });
+        const result = response.data[0];
+        res.json({
+            food: result.label,
+            confidence: result.score,
+            calories: result.label === 'Pizza' ? 285 : 0 // Example logic
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-  } catch (error) {
-    console.error(error.response?.data || error.message);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
 });
 
-app.listen(port, () => {
-  console.log(`FoodieLens API running on port ${port}`);
+app.listen(PORT, () => {
+    console.log(`FoodieLens API running on port ${PORT}`);
 });
+    
