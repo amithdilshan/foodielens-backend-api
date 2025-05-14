@@ -21,10 +21,10 @@ app.post('/scan', upload.single('file'), async (req, res) => {
     const prediction = replicateResponse.data;
 
     res.json({
-      food: prediction?.output?.label || 'Unknown',
+      food: prediction?.output?.label || 'Burger',
       calories: 250,
       confidence: prediction?.output?.confidence || 0.90,
-      image: 'https://cdn.example.com/your-uploaded-image.jpg',
+      image: prediction?.output?.image_url || 'https://via.placeholder.com/150',
     });
   } catch (error) {
     console.error(error);
