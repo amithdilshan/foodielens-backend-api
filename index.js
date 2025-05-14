@@ -25,7 +25,7 @@ app.post('/predict', async (req, res) => {
       { inputs: image },
       {
         headers: {
-          Authorization: 'Bearer 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'
+          Authorization: 'Bearer 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'
         }
       }
     );
