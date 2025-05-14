@@ -15,7 +15,7 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     const image = req.file.buffer.toString('base64');
 
     const response = await axios.post(
-      'https://api-inference.huggingface.co/models/Luke537/image_classification_food_model',
+      'https://huggingface.co/thuyentruong/food_classification_model',
       { inputs: `data:image/jpeg;base64,${image}` },
       {
         headers: {
