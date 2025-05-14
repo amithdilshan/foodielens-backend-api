@@ -7,6 +7,11 @@ const axios = require('axios');
 const app = express();
 const upload = multer();
 
+// Root route for health check
+app.get('/', (req, res) => {
+  res.send('FoodieLens Backend API is running!');
+});
+
 app.post('/scan', upload.single('file'), async (req, res) => {
   try {
     console.log('Using HuggingFace Token:', process.env.HF_API_TOKEN);
