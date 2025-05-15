@@ -7,7 +7,7 @@ This is a simple Node.js API for food image recognition using HuggingFace Infere
 
 1. Copy your HuggingFace Token to `.env` file:
 ```
-HF_TOKEN=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
+HF_TOKEN=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
 PORT=5000
 ```
 
