@@ -4,52 +4,36 @@ const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 10000;
 
-app.use(bodyParser.json());
-
-app.get('/', (req, res) => {
-  res.send('FoodieLens Backend API is working!');
-});
+// Increase payload limit to 10mb
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 app.post('/predict', async (req, res) => {
-  const { image } = req.body;
+    try {
+        const imageBase64 = req.body.image;
+        if (!imageBase64) {
+            return res.status(400).json({ error: 'Image data not provided' });
+        }
 
-  if (!image) {
-    return res.status(400).json({ error: 'Image is required' });
-  }
+        const response = await axios.post(
+            'https://api-inference.huggingface.co/models/your-model-name',
+            { inputs: imageBase64 },
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.HF_API_TOKEN}`
+                }
+            }
+        );
 
-  try {
-    const response = await axios.post(
-      'https://api-inference.huggingface.co/models/akhaliq/food-101-classification',
-      { inputs: image },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.HF_TOKEN}`,
-        },
-      }
-    );
-
-    if (response.data.error) {
-      return res.status(500).json({ error: response.data.error });
+        res.json(response.data);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: 'Prediction failed' });
     }
-
-    const predictions = response.data[0];
-
-    const result = {
-      food: predictions.label || 'Unknown',
-      confidence: predictions.score || 0,
-      calories: Math.floor(Math.random() * 500) + 100
-    };
-
-    res.json(result);
-
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: 'Prediction failed', detail: error.message });
-  }
 });
 
 app.listen(port, () => {
-  console.log(`FoodieLens Backend running on port ${port}`);
+    console.log(`FoodieLens Backend running on port ${port}`);
 });
