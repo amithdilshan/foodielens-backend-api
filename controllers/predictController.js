@@ -8,9 +8,9 @@ const predict = async (req, res, next) => {
             return res.status(400).json({ error: 'Image data is required' });
         }
 
-        const modelName = 'facebook/detr-resnet-50'; // Change model if needed
+        const modelName = 'facebook/detr-resnet-50';
 
-        const response = await hfClient.post(`/${thuyentruong/food_classification_model}`, {
+        const response = await hfClient.post(`/{thuyentruong/food_classification_model}`, {
             inputs: image
         });
 
