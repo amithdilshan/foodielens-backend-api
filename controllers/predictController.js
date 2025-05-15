@@ -10,7 +10,7 @@ const predict = async (req, res, next) => {
 
         const modelName = 'Kaludi/food-category-classification-v2.0';
 
-        const response = await hfClient.post(`/${modelName}`, {
+        const response = await hfClient.post(`/https://huggingface.co/Kaludi/food-category-classification-v2.0`, {
             inputs: image
         });
 
