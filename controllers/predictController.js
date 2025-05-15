@@ -10,7 +10,7 @@ const predict = async (req, res, next) => {
 
         const modelName = 'facebook/detr-resnet-50';
 
-        const response = await hfClient.post(`/{thuyentruong/food_classification_model}`, {
+        const response = await hfClient.post(`/{nisuga/food_type_classification_model}`, {
             inputs: image
         });
 
