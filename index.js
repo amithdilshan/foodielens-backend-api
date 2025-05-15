@@ -22,7 +22,7 @@ app.post('/predict', async (req, res) => {
             { inputs: imageBase64 },
             {
                 headers: {
-                    Authorization: `Bearer ${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}`
+                    Authorization: `Bearer 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`
                 }
             }
         );
