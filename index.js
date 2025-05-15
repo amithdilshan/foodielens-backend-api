@@ -18,7 +18,7 @@ app.post('/predict', async (req, res) => {
         }
 
         const response = await axios.post(
-            'https://api-inference.huggingface.co/models/https://huggingface.co/thuyentruong/food_classification_model',
+            'https://api-inference.huggingface.co/models/thuyentruong/food_classification_model',
             { inputs: imageBase64 },
             {
                 headers: {
